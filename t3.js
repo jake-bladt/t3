@@ -31,6 +31,12 @@ t3.gameView = function() {};
     this.activePlayer.squares.push(ndx);
   };
 
+  gameController.gameStatus = function() {
+    return { 
+      winner:  null,
+      message: this.activePlayer.symbol + "'s turn" };
+  };
+
   // TODO - These should be scoped to the view.
   var BODY_PADDING = 20;
   var MIN_BOUNDARY = 0;
@@ -84,17 +90,24 @@ t3.gameView = function() {};
     this.drawLine(MIN_BOUNDARY,    SECOND_DIVISION, MAX_BOUNDARY,    SECOND_DIVISION);
   };
 
+  gameView.showStatus = function() {
+    this.statusArea.text(this.controller.gameStatus().message);
+  };
+
   gameView.handleClick = function(e) {
     var square = this.getSquare(e.clientX - BODY_PADDING, e.clientY - BODY_PADDING);
     if(this.controller.availableSquares.indexOf(square.index) >= 0) {
       this.drawSymbol(this.controller.activePlayer.symbol, square);
       this.controller.claimSquare(square);
       this.controller.togglePlayer();
+      this.showStatus();
     };
   };
 
   $(document).ready(function() {
   	gameView.canvas = $("#gameCanvas");
+  	gameView.statusArea = $("#gameStatus");
+  	gameView.showStatus();
     $("#gameCanvas").click(function(e) { gameView.handleClick(e) });
 
     gameView.drawBoard();
