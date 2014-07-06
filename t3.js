@@ -1,15 +1,34 @@
 t3 = function() {};
-t3.gameView = function() {};
 t3.gameController = function() {};
+t3.gameView = function() {};
 
 (function($, gameView, gameController) {
-  gameController.player1 = { symbol: "X" };
-  gameController.player2 = { symbol: "O" };
+  gameController.player1 = { 
+  	symbol: "X",
+  	squares: [] 
+  };
+  gameController.player2 = { 
+  	symbol: "O",
+  	squares: []
+  };
   gameController.activePlayer = gameController.player1;
 
+  gameController.availableSquares = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  gameController.winningSets = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6]
+  ];
+
   gameController.togglePlayer = function() {
-    gameController.activePlayer = (gameController.activePlayer === gameController.player1) ? 
-      gameController.player2 : gameController.player1;
+    this.activePlayer = (this.activePlayer === this.player1) ? 
+      this.player2 : this.player1;
+  };
+
+  gameController.claimSquare = function(square) {
+  	var ndx = square.index;
+  	this.availableSquares.splice(this.availableSquares.indexOf(ndx), 1);
+    this.activePlayer.squares.push(ndx);
   };
 
   // TODO - These should be scoped to the view.
@@ -20,12 +39,14 @@ t3.gameController = function() {};
   var SECOND_DIVISION = SQUARE_SIZE * 2;
   var MAX_BOUNDARY =    SQUARE_SIZE * 3;
 
+  gameView.controller = gameController;
+
   gameView.getDrawingContext = function() {
-    return gameView.canvas[0].getContext("2d");
+    return this.canvas[0].getContext("2d");
   };
 
   gameView.drawLine = function(x1, y1, x2, y2) {
-    var context = gameView.getDrawingContext();
+    var context = this.getDrawingContext();
     context.lineWidth = 10;
     context.strokeStyle = 'black';
     context.moveTo(x1, y1);
@@ -37,7 +58,7 @@ t3.gameController = function() {};
     var x = (square.col + 0.5) * SQUARE_SIZE;
     var y = (square.row + 0.5) * SQUARE_SIZE;
 
-    var context = gameView.getDrawingContext();
+    var context = this.getDrawingContext();
     context.font = "200pt Calibri";
     context.fillStyle = "black";
     context.textAlign = "center";
@@ -57,16 +78,19 @@ t3.gameController = function() {};
   };
 
   gameView.drawBoard = function() {
-    gameView.drawLine(FIRST_DIVISION,  MIN_BOUNDARY,    FIRST_DIVISION,  MAX_BOUNDARY);
-    gameView.drawLine(SECOND_DIVISION, MIN_BOUNDARY,    SECOND_DIVISION, MAX_BOUNDARY);
-    gameView.drawLine(MIN_BOUNDARY,    FIRST_DIVISION,  MAX_BOUNDARY,    FIRST_DIVISION);
-    gameView.drawLine(MIN_BOUNDARY,    SECOND_DIVISION, MAX_BOUNDARY,    SECOND_DIVISION);
+    this.drawLine(FIRST_DIVISION,  MIN_BOUNDARY,    FIRST_DIVISION,  MAX_BOUNDARY);
+    this.drawLine(SECOND_DIVISION, MIN_BOUNDARY,    SECOND_DIVISION, MAX_BOUNDARY);
+    this.drawLine(MIN_BOUNDARY,    FIRST_DIVISION,  MAX_BOUNDARY,    FIRST_DIVISION);
+    this.drawLine(MIN_BOUNDARY,    SECOND_DIVISION, MAX_BOUNDARY,    SECOND_DIVISION);
   };
 
   gameView.handleClick = function(e) {
-    var square = gameView.getSquare(e.clientX - BODY_PADDING, e.clientY - BODY_PADDING);
-    gameView.drawSymbol(gameController.activePlayer.symbol, square);
-    gameController.togglePlayer();
+    var square = this.getSquare(e.clientX - BODY_PADDING, e.clientY - BODY_PADDING);
+    if(this.controller.availableSquares.indexOf(square.index) >= 0) {
+      this.drawSymbol(this.controller.activePlayer.symbol, square);
+      this.controller.claimSquare(square);
+      this.controller.togglePlayer();
+    };
   };
 
   $(document).ready(function() {
