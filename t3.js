@@ -24,13 +24,26 @@ t3.gameController = function() {};
   };
 
   gameView.drawSymbol = function(symbol, square) {
+    var x = (square.col + 0.5) * SQUARE_SIZE;
+    var y = (square.row + 0.5) * SQUARE_SIZE;
 
+    var context = gameView.getDrawingContext();
+    context.font = "200pt Calibri";
+    context.fillStyle = "black";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(symbol, x, y);
   };
 
   gameView.getSquare = function(x, y) {
-  	var row = Math.floor(x / SQUARE_SIZE);
-  	var col = Math.floor(y / SQUARE_SIZE);
-    return row + col * 3;
+  	var col = Math.floor(x / SQUARE_SIZE);
+  	var row = Math.floor(y / SQUARE_SIZE);
+  	var ndx = col + row * 3;
+    return {
+      row: row,
+      col: col,
+      index: ndx
+    }; 
   };
 
   gameView.drawBoard = function() {
@@ -42,7 +55,7 @@ t3.gameController = function() {};
 
   gameView.handleClick = function(e) {
     var square = gameView.getSquare(e.clientX - BODY_PADDING, e.clientY - BODY_PADDING);
-    alert("Square " + square);
+    gameView.drawSymbol("X", square);
   };
 
   $(document).ready(function() {
