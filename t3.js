@@ -3,6 +3,16 @@ t3.gameView = function() {};
 t3.gameController = function() {};
 
 (function($, gameView, gameController) {
+  gameController.player1 = { symbol: "X" };
+  gameController.player2 = { symbol: "O" };
+  gameController.activePlayer = gameController.player1;
+
+  gameController.togglePlayer = function() {
+    gameController.activePlayer = (gameController.activePlayer === gameController.player1) ? 
+      gameController.player2 : gameController.player1;
+  };
+
+  // TODO - These should be scoped to the view.
   var BODY_PADDING = 20;
   var MIN_BOUNDARY = 0;
   var SQUARE_SIZE = 200;
@@ -55,7 +65,8 @@ t3.gameController = function() {};
 
   gameView.handleClick = function(e) {
     var square = gameView.getSquare(e.clientX - BODY_PADDING, e.clientY - BODY_PADDING);
-    gameView.drawSymbol("X", square);
+    gameView.drawSymbol(gameController.activePlayer.symbol, square);
+    gameController.togglePlayer();
   };
 
   $(document).ready(function() {
