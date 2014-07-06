@@ -3,13 +3,15 @@ t3.gameView = function() {};
 t3.gameController = function() {};
 
 (function($, gameView, gameController) {
-  var FIRST_DIVISION = 200;
-  var SECOND_DIVISION = 400;
+  var BODY_PADDING = 20;
   var MIN_BOUNDARY = 0;
-  var MAX_BOUNDARY = 600;
+  var SQUARE_SIZE = 200;
+  var FIRST_DIVISION =  SQUARE_SIZE;
+  var SECOND_DIVISION = SQUARE_SIZE * 2;
+  var MAX_BOUNDARY =    SQUARE_SIZE * 3;
 
   gameView.getDrawingContext = function() {
-    return gameView.canvas.getContext("2d");
+    return gameView.canvas[0].getContext("2d");
   };
 
   gameView.drawLine = function(x1, y1, x2, y2) {
@@ -26,7 +28,9 @@ t3.gameController = function() {};
   };
 
   gameView.getSquare = function(x, y) {
-
+  	var row = Math.floor(x / SQUARE_SIZE);
+  	var col = Math.floor(y / SQUARE_SIZE);
+    return row + col * 3;
   };
 
   gameView.drawBoard = function() {
@@ -36,8 +40,15 @@ t3.gameController = function() {};
     gameView.drawLine(MIN_BOUNDARY,    SECOND_DIVISION, MAX_BOUNDARY,    SECOND_DIVISION);
   };
 
+  gameView.handleClick = function(e) {
+    var square = gameView.getSquare(e.clientX - BODY_PADDING, e.clientY - BODY_PADDING);
+    alert("Square " + square);
+  };
+
   $(document).ready(function() {
-  	gameView.canvas = $("#gameCanvas")[0];
+  	gameView.canvas = $("#gameCanvas");
+    $("#gameCanvas").click(function(e) { gameView.handleClick(e) });
+
     gameView.drawBoard();
   });
 
