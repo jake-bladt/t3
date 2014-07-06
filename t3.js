@@ -3,6 +3,10 @@ t3.gameView = function() {};
 t3.gameController = function() {};
 
 (function($, gameView, gameController) {
+  var FIRST_DIVISION = 200;
+  var SECOND_DIVISION = 400;
+  var MIN_BOUNDARY = 0;
+  var MAX_BOUNDARY = 600;
 
   gameView.getDrawingContext = function() {
     return gameView.canvas.getContext("2d");
@@ -17,11 +21,19 @@ t3.gameController = function() {};
     context.stroke();
   };
 
+  gameView.drawSymbol = function(symbol, square) {
+
+  };
+
+  gameView.getSquare = function(x, y) {
+
+  };
+
   gameView.drawBoard = function() {
-    gameView.drawLine(200, 0, 200, 600);
-    gameView.drawLine(400, 0, 400, 600);
-    gameView.drawLine(0, 200, 600, 200);
-    gameView.drawLine(0, 400, 600, 400);
+    gameView.drawLine(FIRST_DIVISION,  MIN_BOUNDARY,    FIRST_DIVISION,  MAX_BOUNDARY);
+    gameView.drawLine(SECOND_DIVISION, MIN_BOUNDARY,    SECOND_DIVISION, MAX_BOUNDARY);
+    gameView.drawLine(MIN_BOUNDARY,    FIRST_DIVISION,  MAX_BOUNDARY,    FIRST_DIVISION);
+    gameView.drawLine(MIN_BOUNDARY,    SECOND_DIVISION, MAX_BOUNDARY,    SECOND_DIVISION);
   };
 
   $(document).ready(function() {
