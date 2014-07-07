@@ -98,6 +98,11 @@ t3.gameView = function() {};
     context.stroke();
   };
 
+  gameView.clearBoard = function() {
+    var context = this.getDrawingContext();
+    context.clearRect(MIN_BOUNDARY, MIN_BOUNDARY, MAX_BOUNDARY, MAX_BOUNDARY);
+  };
+
   gameView.drawSymbol = function(symbol, square) {
     var x = (square.col + 0.5) * SQUARE_SIZE;
     var y = (square.row + 0.5) * SQUARE_SIZE;
@@ -147,6 +152,8 @@ t3.gameView = function() {};
   gameView.startTwoPlayerGame = function(e) {
     this.statusArea.show();
     this.launchForm.hide();
+    this.clearBoard();
+    this.drawBoard();
     this.controller.startTwoPlayerGame();
     this.updateStatus();
   };
