@@ -3,27 +3,21 @@
   // TODO - Separate out game data from controller.
   ai.gameData = gameController;
   gameController.ai = ai;
-  gameView.controller = gameController;
+  gameController.view = gameView;
 
   $(document).ready(function() {
   	gameView.canvas = $("#gameCanvas");
   	gameView.statusArea = $("#gameStatus");
     gameView.launchForm = $("#startGame");
-
-    gameView.canvas.click(function(e) { gameView.handleCanvasClick(e) });
-    $('#twoPlayer').click(function(e) { 
-      gameView.startGame(function() {
-      	gameView.controller.startTwoPlayerGame();
-      });
-    });
-    $('#onePlayer').click(function(e) { 
-      gameView.startGame(function() {
-      	gameView.controller.startOnePlayerGame();
-      });
-    });
-    
-  	gameView.statusArea.hide();
     gameView.drawBoard();
+
+    gameView.canvas.click(function(e) { 
+    	var square = gameView.getSquare(e.clientX, e.clientY);
+    	gameController.claimSquare(square);
+    });
+
+    $('#twoPlayer').click(function() { gameController.startTwoPlayerGame() });
+    $('#onePlayer').click(function() { gameController.startOnePlayerGame() });
   });
 
 })(jQuery, t3View, t3Controller, joshua);
