@@ -1,9 +1,11 @@
-t3 = function() {};
+var t3 = function() {};
 t3.gameController = function() {};
 t3.gameView = function() {};
-t3.joshua = function() {};
 
 (function($, gameView, gameController, ai) {
+
+  // TODO - Separate out game data from controller.
+  ai.gameData = gameController;
 
   gameController.winningSets = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -39,7 +41,8 @@ t3.joshua = function() {};
   	  squares: [],
   	  ai: ai
     };
-    this.player2.ai.opponent = this.player1;
+
+    this.player2.ai.setPlayers(this.player2, this.player1);
     this.activePlayer = this.player1;
   };
 
@@ -89,18 +92,6 @@ t3.joshua = function() {};
     return { 
       status:  status,
       message: message };
-  };
-
-  var CENTER_SQUARE =  4;
-  var CORNER_SQUARES = [0, 2, 6, 8];
-  var SIDE_SQUARES =   [1, 3, 5, 7];
-
-  // AI logic
-  // TODO - The game state data can be broken out into its own object.
-  ai.gameData = gameController;
-
-  ai.pickSquare = function() { 
-    return this.gameData.availableSquares[0];
   };
 
   // TODO - These should be scoped to the view.
@@ -226,4 +217,4 @@ t3.joshua = function() {};
     gameView.drawBoard();
   });
 
-})(jQuery, t3.gameView, t3.gameController, t3.joshua);
+})(jQuery, t3.gameView, t3.gameController, joshua);
