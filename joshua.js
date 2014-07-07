@@ -43,8 +43,37 @@ var joshua = function() {};
     });
   };
 
+  joshua.setHasWin = function(player, winningSet) {
+    var squareCount = 0;
+    var emptySpot = null;
+    for(i = 0; i < 3; i++) {
+      if(joshua.whoHasSquare(winningSet[i]) === player) {
+        squareCount++;
+      } else {
+        emptySpot = winningSet[i];
+      };
+    };
+    if(squareCount == 2) return emptySpot;
+    return null;
+  };
+
+  joshua.hasWinningPlay = function(player) {
+    var ret = null;
+    $(player.possibleWins).each(function() {
+      var winner = joshua.setHasWin(player, this);
+      if(winner) ret = winner;
+    });
+    return ret;
+  }
+
   joshua.pickSquare = function() {
-    this.evaluateBoard(); 
+    this.evaluateBoard();
+    var win = this.hasWinningPlay(this.me);
+    if(win !== null) return win;
+
+    var block = this.hasWinningPlay(this.opponent);
+    if(block !== null) return block;
+
     return this.gameData.availableSquares[0];
   };
 })(joshua, jQuery);
