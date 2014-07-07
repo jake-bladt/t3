@@ -34,7 +34,7 @@ t3Controller = function() {};
     this.player2 = { 
   	  symbol: "O",
   	  squares: [],
-  	  ai: ai
+  	  ai: this.ai
     };
 
     this.player2.ai.setPlayers(this.player2, this.player1);

@@ -5,6 +5,7 @@ t3.gameView = function() {};
 
   // TODO - Separate out game data from controller.
   ai.gameData = gameController;
+  gameController.ai = ai;
 
   // TODO - These should be scoped to the view.
   var BODY_PADDING = 20;
