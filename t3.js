@@ -136,6 +136,9 @@ t3.gameView = function() {};
   gameView.updateStatus = function() {
   	this.gameStatus = this.controller.gameStatus();
     this.statusArea.text(this.gameStatus.message);
+    if(this.gameStatus.status != 'in progress') {
+      gameView.launchForm.show();	
+    }
   };
 
   gameView.handleCanvasClick = function(e) {
@@ -149,12 +152,12 @@ t3.gameView = function() {};
     };
   };
 
-  gameView.startTwoPlayerGame = function(e) {
+  gameView.startGame = function(gameStart) {
     this.statusArea.show();
     this.launchForm.hide();
     this.clearBoard();
+    gameStart();
     this.drawBoard();
-    this.controller.startTwoPlayerGame();
     this.updateStatus();
   };
 
@@ -164,7 +167,11 @@ t3.gameView = function() {};
     gameView.launchForm = $("#startGame");
 
     gameView.canvas.click(function(e) { gameView.handleCanvasClick(e) });
-    $('#twoPlayer').click(function(e) { gameView.startTwoPlayerGame() });
+    $('#twoPlayer').click(function(e) { 
+      gameView.startGame(function() {
+      	gameView.controller.startTwoPlayerGame();
+      });
+    });
     
   	gameView.statusArea.hide();
     gameView.drawBoard();
