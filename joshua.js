@@ -1,6 +1,6 @@
 var joshua = function() {};
 
- (function(joshua) {
+ (function(joshua, $) {
   var CENTER_SQUARE =  4;
   var CORNER_SQUARES = [0, 2, 6, 8];
   var SIDE_SQUARES =   [1, 3, 5, 7];
@@ -8,13 +8,43 @@ var joshua = function() {};
   joshua.setPlayers = function(me, opponent) {
     this.me = me;
     this.opponent = opponent;
+    this.nobody = function() {};
+    this.anybody = function() {};
+  };
+
+  joshua.whoHasSquare = function(squareNumber) {
+    if(this.me.squares.indexOf(squareNumber) > -1) return this.me;
+    if(this.opponent.squares.indexOf(squareNumber) > -1) return this.opponent;
+    return this.anybody;
+  };
+
+  joshua.whoHasSet = function(winningSet) {
+    var setOwner = joshua.whoHasSquare(winningSet[0]);
+    for(i = 1; i <= 2; i++) {
+      var squareOwner = joshua.whoHasSquare(winningSet[i]);
+      if(setOwner === this.anybody) {
+        setOwner = squareOwner;
+      } else if(squareOwner !== setOwner && squareOwner !== this.anybody) {
+        setOwner = this.nobody;
+      };
+    };
+    return setOwner;
   };
 
   joshua.evaluateBoard = function() {
+    this.me.possibleWins = [];
+    this.opponent.possibleWins = [];
+    this.nobody.possibleWins = [];
+    this.anybody.possibleWins = [];
 
+    $(this.gameData.winningSets).each(function() {
+      var setOwner = joshua.whoHasSet(this);
+      setOwner.possibleWins.push(this);
+    });
   };
 
-  joshua.pickSquare = function() { 
+  joshua.pickSquare = function() {
+    this.evaluateBoard(); 
     return this.gameData.availableSquares[0];
   };
-})(joshua);
+})(joshua, jQuery);
