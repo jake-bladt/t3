@@ -2,8 +2,6 @@ var joshua = function() {};
 
  (function(joshua, $) {
   var CENTER_SQUARE =  4;
-  var CORNER_SQUARES = [0, 2, 6, 8];
-  var SIDE_SQUARES =   [1, 3, 5, 7];
 
   joshua.setPlayers = function(me, opponent) {
     this.me = me;
@@ -66,6 +64,40 @@ var joshua = function() {};
     return ret;
   }
 
+  joshua.centerIsFree = function() {
+    return (this.whoHasSquare(CENTER_SQUARE) === this.anybody) ? CENTER_SQUARE : null 
+  };
+
+  joshua.denyMost = function(player) {
+    var avail = this.gameData.availableSquares;
+    var maxCount = 0;
+    var square = null;
+    for(i = 0; i < avail.length; i++) {
+      var count = 0;
+      for(j = 0; j < player.possibleWins.length; j++) {
+        if(player.possibleWins[j].indexOf(avail[i]) > 0) count++;
+      };
+      if(count >= maxCount) {
+        square = avail[i];
+        maxCount = count;
+      }
+    }
+    return (maxCount > 1) ? square : null;
+  };
+
+  joshua.pushForWin = function(player) {
+    if(player.possibleWins.length > 0) {
+      var canWin = player.possibleWins[0];
+      for(i = 2; i >= 0; i--) {
+        if(this.gameData.availableSquares.indexOf(canWin[i]) >= 0) {
+          return canWin[i];
+        } else {
+          return null;
+        }
+      }
+    }
+};
+
   joshua.pickSquare = function() {
     this.evaluateBoard();
     var win = this.hasWinningPlay(this.me);
@@ -73,6 +105,15 @@ var joshua = function() {};
 
     var block = this.hasWinningPlay(this.opponent);
     if(block !== null) return block;
+
+    var center = this.centerIsFree();
+    if(center !== null) return center;
+
+    var push = this.pushForWin(this.me);
+    if(push != null) return push;
+
+    var deny = this.denyMost(this.opponent);
+    if(deny !== null) return deny;
 
     return this.gameData.availableSquares[0];
   };
