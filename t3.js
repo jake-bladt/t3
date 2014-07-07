@@ -3,22 +3,29 @@ t3.gameController = function() {};
 t3.gameView = function() {};
 
 (function($, gameView, gameController) {
-  gameController.player1 = { 
-  	symbol: "X",
-  	squares: [] 
-  };
-  gameController.player2 = { 
-  	symbol: "O",
-  	squares: []
-  };
-  gameController.activePlayer = gameController.player1;
 
-  gameController.availableSquares = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   gameController.winningSets = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]
   ];
+
+  gameController.startNewGame = function() {
+    gameController.availableSquares = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  };
+
+  gameController.startTwoPlayerGame = function() {
+    this.startNewGame();
+    this.player1 = { 
+  	  symbol: "X",
+  	  squares: [] 
+    };
+    this.player2 = { 
+  	  symbol: "O",
+  	  squares: []
+    };
+    this.activePlayer = this.player1;
+  };
 
   gameController.togglePlayer = function() {
     this.activePlayer = (this.activePlayer === this.player1) ? 
@@ -126,7 +133,7 @@ t3.gameView = function() {};
     this.statusArea.text(this.gameStatus.message);
   };
 
-  gameView.handleClick = function(e) {
+  gameView.handleCanvasClick = function(e) {
     var square = this.getSquare(e.clientX - BODY_PADDING, e.clientY - BODY_PADDING);
     if(this.gameStatus.status == "in progress" && 
        this.controller.availableSquares.indexOf(square.index) >= 0) {
@@ -137,12 +144,22 @@ t3.gameView = function() {};
     };
   };
 
+  gameView.startTwoPlayerGame = function(e) {
+    this.statusArea.show();
+    this.launchForm.hide();
+    this.controller.startTwoPlayerGame();
+    this.updateStatus();
+  };
+
   $(document).ready(function() {
   	gameView.canvas = $("#gameCanvas");
   	gameView.statusArea = $("#gameStatus");
-  	gameView.updateStatus();
-    $("#gameCanvas").click(function(e) { gameView.handleClick(e) });
+    gameView.launchForm = $("#startGame");
 
+    gameView.canvas.click(function(e) { gameView.handleCanvasClick(e) });
+    $('#twoPlayer').click(function(e) { gameView.startTwoPlayerGame() });
+    
+  	gameView.statusArea.hide();
     gameView.drawBoard();
   });
 
