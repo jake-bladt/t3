@@ -121,24 +121,26 @@ t3.gameView = function() {};
     this.drawLine(MIN_BOUNDARY,    SECOND_DIVISION, MAX_BOUNDARY,    SECOND_DIVISION);
   };
 
-  gameView.showStatus = function() {
-    this.statusArea.text(this.controller.gameStatus().message);
+  gameView.updateStatus = function() {
+  	this.gameStatus = this.controller.gameStatus();
+    this.statusArea.text(this.gameStatus.message);
   };
 
   gameView.handleClick = function(e) {
     var square = this.getSquare(e.clientX - BODY_PADDING, e.clientY - BODY_PADDING);
-    if(this.controller.availableSquares.indexOf(square.index) >= 0) {
+    if(this.gameStatus.status == "in progress" && 
+       this.controller.availableSquares.indexOf(square.index) >= 0) {
       this.drawSymbol(this.controller.activePlayer.symbol, square);
       this.controller.claimSquare(square);
       this.controller.togglePlayer();
-      this.showStatus();
+      this.updateStatus();
     };
   };
 
   $(document).ready(function() {
   	gameView.canvas = $("#gameCanvas");
   	gameView.statusArea = $("#gameStatus");
-  	gameView.showStatus();
+  	gameView.updateStatus();
     $("#gameCanvas").click(function(e) { gameView.handleClick(e) });
 
     gameView.drawBoard();
