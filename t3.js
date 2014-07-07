@@ -13,7 +13,7 @@ t3.gameView = function() {};
   };
   gameController.activePlayer = gameController.player1;
 
-  gameController.availableSquares = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  gameController.availableSquares = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   gameController.winningSets = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
@@ -26,7 +26,7 @@ t3.gameView = function() {};
   };
 
   gameController.claimSquare = function(square) {
-  	var ndx = square.index;
+  	var ndx = parseInt(square.index);
   	this.availableSquares.splice(this.availableSquares.indexOf(ndx), 1);
     this.activePlayer.squares.push(ndx);
   };
@@ -43,8 +43,7 @@ t3.gameView = function() {};
   gameController.playerHasAll = function(player, squares) {
   	var ret = true;
     $(squares).each(function() {
-      var ndx = player.squares.indexOf(parseInt(this));
-      ret = ret && (ndx >= 0);
+      ret = ret && (player.squares.indexOf(parseInt(this)) >= 0);
     });
     return ret;
   };
@@ -55,7 +54,7 @@ t3.gameView = function() {};
       status = "win";
       message = winner.symbol + " wins.";
     } else {
-      if(this.availableSquares.count == 0) {
+      if(this.availableSquares.length == 0) {
       	status = "draw";
       	message = "It's a draw.";
       } else {
