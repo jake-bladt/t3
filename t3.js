@@ -1,8 +1,9 @@
 t3 = function() {};
 t3.gameController = function() {};
 t3.gameView = function() {};
+t3.joshua = function() {};
 
-(function($, gameView, gameController) {
+(function($, gameView, gameController, ai) {
 
   gameController.winningSets = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -24,6 +25,21 @@ t3.gameView = function() {};
   	  symbol: "O",
   	  squares: []
     };
+    this.activePlayer = this.player1;
+  };
+
+  gameController.startOnePlayerGame = function() {
+    this.startNewGame();
+    this.player1 = { 
+  	  symbol: "X",
+  	  squares: [] 
+    };
+    this.player2 = { 
+  	  symbol: "O",
+  	  squares: [],
+  	  ai: ai
+    };
+    this.player2.ai.opponent = this.player1;
     this.activePlayer = this.player1;
   };
 
@@ -73,6 +89,18 @@ t3.gameView = function() {};
     return { 
       status:  status,
       message: message };
+  };
+
+  var CENTER_SQUARE =  4;
+  var CORNER_SQUARES = [0, 2, 6, 8];
+  var SIDE_SQUARES =   [1, 3, 5, 7];
+
+  // AI logic
+  // TODO - The game state data can be broken out into its own object.
+  ai.gameData = gameController;
+
+  ai.pickSquare = function() { 
+    return this.gameData.availableSquares[0];
   };
 
   // TODO - These should be scoped to the view.
@@ -133,22 +161,38 @@ t3.gameView = function() {};
     this.drawLine(MIN_BOUNDARY,    SECOND_DIVISION, MAX_BOUNDARY,    SECOND_DIVISION);
   };
 
-  gameView.updateStatus = function() {
-  	this.gameStatus = this.controller.gameStatus();
-    this.statusArea.text(this.gameStatus.message);
-    if(this.gameStatus.status != 'in progress') {
-      gameView.launchForm.show();	
-    }
+  gameView.selectSquare = function(square) {
+      this.drawSymbol(this.controller.activePlayer.symbol, square);
+      this.controller.claimSquare(square);
+      this.controller.togglePlayer();
+      this.endTurn();
+  };
+
+  gameView.endTurn = function() {
+  	if(this.controller.activePlayer.ai) {
+  	  // TODO - separate out the logic for getting rows and col from index.
+  	  var ndx = this.controller.activePlayer.ai.pickSquare();
+      var aiSquare = { 
+      	index: ndx,
+      	col: ndx % 3,
+      	row: Math.floor(ndx / 3) 
+      };
+
+      this.selectSquare(aiSquare);
+  	} else {
+  	  this.gameStatus = this.controller.gameStatus();
+      this.statusArea.text(this.gameStatus.message);
+      if(this.gameStatus.status != 'in progress') {
+        gameView.launchForm.show();	
+      }
+  	}
   };
 
   gameView.handleCanvasClick = function(e) {
     var square = this.getSquare(e.clientX - BODY_PADDING, e.clientY - BODY_PADDING);
     if(this.gameStatus.status == "in progress" && 
        this.controller.availableSquares.indexOf(square.index) >= 0) {
-      this.drawSymbol(this.controller.activePlayer.symbol, square);
-      this.controller.claimSquare(square);
-      this.controller.togglePlayer();
-      this.updateStatus();
+       	this.selectSquare(square);
     };
   };
 
@@ -158,7 +202,7 @@ t3.gameView = function() {};
     this.clearBoard();
     gameStart();
     this.drawBoard();
-    this.updateStatus();
+    this.endTurn();
   };
 
   $(document).ready(function() {
@@ -172,9 +216,14 @@ t3.gameView = function() {};
       	gameView.controller.startTwoPlayerGame();
       });
     });
+    $('#onePlayer').click(function(e) { 
+      gameView.startGame(function() {
+      	gameView.controller.startOnePlayerGame();
+      });
+    });
     
   	gameView.statusArea.hide();
     gameView.drawBoard();
   });
 
-})(jQuery, t3.gameView, t3.gameController);
+})(jQuery, t3.gameView, t3.gameController, t3.joshua);
