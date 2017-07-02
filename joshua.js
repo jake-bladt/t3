@@ -110,7 +110,7 @@ let joshua = {};
     if(center !== null) return center;
 
     var push = this.pushForWin(this.me);
-    if(push != null) return push;
+    if(push !== null) return push;
 
     var deny = this.denyMost(this.opponent);
     if(deny !== null) return deny;
