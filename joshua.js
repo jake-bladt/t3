@@ -1,4 +1,4 @@
-var joshua = function() {};
+let joshua = {};
 
  (function(joshua, $) {
   var CENTER_SQUARE =  4;
